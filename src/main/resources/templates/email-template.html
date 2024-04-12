@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Template</title>
+</head>
+<body>
+<p>Hello, <b th:text="${name}">Name</b></p>
+<p>Your friend added you as member of upcoming Trip!</p>
+
+<!-- List locations -->
+<ul>
+    <li th:each="location : ${locations}" th:text="${location}">Location</li>
+</ul>
+<!-- Button to Add Event to Google Calendar -->
+<a th:href="${googleCalendarLink}"
+   style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;"
+   target="_blank">Add to Google Calendar</a>
+
+
+
+</body>
+</html>
