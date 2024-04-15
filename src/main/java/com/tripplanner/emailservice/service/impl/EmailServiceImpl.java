@@ -1,7 +1,9 @@
 package com.tripplanner.emailservice.service.impl;
 
 import com.tripplanner.emailservice.model.EmailRecord;
+import com.tripplanner.emailservice.model.UserResponse;
 import com.tripplanner.emailservice.service.EmailService;
+import com.tripplanner.emailservice.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.net.URLEncoder;
@@ -24,8 +26,8 @@ import org.thymeleaf.context.Context;
 public class EmailServiceImpl implements EmailService {
 
   private final JavaMailSender mailSender;
-
   private final TemplateEngine templateEngine;
+  private final UserService userService;
 
   @Override
   public void sendHtmlMessage(EmailRecord emailRecord) {
@@ -34,7 +36,8 @@ public class EmailServiceImpl implements EmailService {
         generateGoogleCalendarLink(emailRecord.title(), emailRecord.start(), emailRecord.end(),
             emailRecord.details(), emailRecord.locations());
 
-    var context = getContext(emailRecord, googleCalendarLink);
+    var user = userService.getUserByEmail(emailRecord.to());
+    var context = getContext(user, emailRecord, googleCalendarLink);
 
     var htmlContent = templateEngine.process("/email-template.html", context);
 
@@ -49,8 +52,10 @@ public class EmailServiceImpl implements EmailService {
     }
   }
 
-  private static @NotNull Context getContext(EmailRecord emailRecord, String googleCalendarLink) {
+  private static @NotNull Context getContext(UserResponse user, EmailRecord emailRecord,
+                                             String googleCalendarLink) {
     var context = new Context();
+    context.setVariable("username", String.format("%s %s", user.firstName(), user.secondName()));
     context.setVariable("name", emailRecord.name());
     context.setVariable("googleCalendarLink", googleCalendarLink);
     context.setVariable("locations", emailRecord.locations());

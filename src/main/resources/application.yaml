@@ -26,5 +26,14 @@ spring:
         binder:
           brokers: localhost:9092
 
+    circuitbreaker:
+      resilience4j:
+        instances:
+          userClientCircuitBreaker:
+            slidingWindowSize: 100
+            permittedNumberOfCallsInHalfOpenState: 3
+            waitDurationInOpenState: 10s
+            failureRateThreshold: 50
+
 server:
   port: 8181
