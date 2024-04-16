@@ -6,9 +6,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "user-management", url = "http://localhost:8080/api/")
+@FeignClient(name = "trip-planner-auth")
 public interface UserManagementClient {
 
-  @GetMapping("/v1/user/{email}")
+  @GetMapping("/api/v1/user/{email}")
   Optional<UserResponse> getUser(@PathVariable("email") String email);
 }
