@@ -6,11 +6,6 @@ import com.tripplanner.emailservice.service.EmailService;
 import com.tripplanner.emailservice.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +14,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -41,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
 
     var htmlContent = templateEngine.process("/email-template.html", context);
 
-    MimeMessage message = null;
+    MimeMessage message;
     try {
       message = getMimeMessage(emailRecord, htmlContent);
       mailSender.send(message);
@@ -53,7 +54,7 @@ public class EmailServiceImpl implements EmailService {
   }
 
   protected static @NotNull Context getContext(UserResponse user, EmailRecord emailRecord,
-                                             String googleCalendarLink) {
+                                               String googleCalendarLink) {
     var context = new Context();
     context.setVariable("username", String.format("%s %s", user.firstName(), user.secondName()));
     context.setVariable("name", emailRecord.name());
@@ -74,7 +75,7 @@ public class EmailServiceImpl implements EmailService {
   }
 
   protected String generateGoogleCalendarLink(String title, LocalDateTime start, LocalDateTime end,
-                                           String details, Set<String> locations) {
+                                              String details, Set<String> locations) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
     String startTime = formatter.format(start);
     String endTime = formatter.format(end);

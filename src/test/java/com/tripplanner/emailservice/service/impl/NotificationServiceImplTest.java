@@ -1,22 +1,22 @@
 package com.tripplanner.emailservice.service.impl;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import com.tripplanner.emailservice.model.EmailRecord;
 import com.tripplanner.emailservice.model.NotificationRecord;
 import com.tripplanner.emailservice.model.PlaceRecord;
 import com.tripplanner.emailservice.model.TripRecord;
 import com.tripplanner.emailservice.service.EmailService;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+import java.util.Set;
+
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class NotificationServiceImplTest {
 
   @Mock
@@ -26,7 +26,6 @@ class NotificationServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
     notificationService = new NotificationServiceImpl(emailService);
   }
 
