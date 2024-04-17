@@ -3,5 +3,5 @@ package com.tripplanner.emailservice.service;
 import com.tripplanner.emailservice.model.UserResponse;
 
 public interface UserService {
-  UserResponse getUserByEmail(String s);
+  UserResponse getUserByEmail(String email);
 }

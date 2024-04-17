@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
     }
   }
 
-  private static @NotNull Context getContext(UserResponse user, EmailRecord emailRecord,
+  protected static @NotNull Context getContext(UserResponse user, EmailRecord emailRecord,
                                              String googleCalendarLink) {
     var context = new Context();
     context.setVariable("username", String.format("%s %s", user.firstName(), user.secondName()));
@@ -73,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
     return message;
   }
 
-  public String generateGoogleCalendarLink(String title, LocalDateTime start, LocalDateTime end,
+  protected String generateGoogleCalendarLink(String title, LocalDateTime start, LocalDateTime end,
                                            String details, Set<String> locations) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
     String startTime = formatter.format(start);

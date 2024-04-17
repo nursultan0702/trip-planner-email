@@ -34,23 +34,15 @@ class NotificationServiceImplTest {
   void testProcessNotification() {
     PlaceRecord place = PlaceRecord.builder().name("name").country("Spain").build();
     PlaceRecord place2 = PlaceRecord.builder().name("name").country("Italy").build();
-    // Arrange
-    Set<PlaceRecord> places = new HashSet<>();
-    places.add(place);
-    places.add(place2);
-
-    Set<String> members = new HashSet<>();
-    members.add("user1@example.com");
-    members.add("user2@example.com");
+    Set<PlaceRecord> places = Set.of(place, place2);
+    Set<String> members = Set.of("user1@example.com", "user2@example.com");
 
     TripRecord trip =
         new TripRecord(1L, "Summer Trip", "A fun summer trip.", null, null, members, List.of(1L, 2L));
     NotificationRecord notification = new NotificationRecord(trip, places);
 
-    // Act
     notificationService.processNotification(notification);
 
-    // Assert
     verify(emailService, times(members.size())).sendHtmlMessage(any(EmailRecord.class));
   }
 }
