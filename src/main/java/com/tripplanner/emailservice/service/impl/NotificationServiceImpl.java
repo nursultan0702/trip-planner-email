@@ -26,17 +26,22 @@ public class NotificationServiceImpl implements NotificationService {
     Set<String> emailsToSend = trip.members();
 
     emailsToSend.forEach(email -> {
-      EmailRecord emailRecord = EmailRecord.builder()
-          .to(email)
-          .start(trip.startDate())
-          .end(trip.endDate())
-          .subject(trip.name())
-          .title(trip.name())
-          .details(trip.description())
-          .locations(getLocations(places))
-          .build();
+      var emailRecord = createEmailRecord(email, trip, places);
       emailService.sendHtmlMessage(emailRecord);
     });
+  }
+
+  private static EmailRecord createEmailRecord(String email, TripRecord trip,
+                                            Set<PlaceRecord> places) {
+    return EmailRecord.builder()
+        .to(email)
+        .start(trip.startDate())
+        .end(trip.endDate())
+        .subject(trip.name())
+        .title(trip.name())
+        .details(trip.description())
+        .locations(getLocations(places))
+        .build();
   }
 
   private static @NotNull Set<String> getLocations(Set<PlaceRecord> places) {

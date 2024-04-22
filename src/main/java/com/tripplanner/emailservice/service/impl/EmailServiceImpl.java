@@ -6,6 +6,9 @@ import com.tripplanner.emailservice.service.EmailService;
 import com.tripplanner.emailservice.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -14,12 +17,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -32,25 +29,27 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendHtmlMessage(EmailRecord emailRecord) {
-
-    var googleCalendarLink =
-        generateGoogleCalendarLink(emailRecord.title(), emailRecord.start(), emailRecord.end(),
-            emailRecord.details(), emailRecord.locations());
-
-    var user = userService.getUserByEmail(emailRecord.to());
-    var context = getContext(user, emailRecord, googleCalendarLink);
-
-    var htmlContent = templateEngine.process("/email-template.html", context);
-
-    MimeMessage message;
     try {
-      message = getMimeMessage(emailRecord, htmlContent);
-      mailSender.send(message);
+      var htmlContent = generateEmailContent(emailRecord);
+      sendEmail(emailRecord, htmlContent);
       log.info("Email sent successfully");
     } catch (MessagingException e) {
       log.error("Error during building email template to record: {}, error message: {} ",
           emailRecord, e.getMessage());
     }
+  }
+
+  private String generateEmailContent(EmailRecord emailRecord) {
+    var googleCalendarLink = generateGoogleCalendarLink(emailRecord);
+    var user = userService.getUserByEmail(emailRecord.to());
+    var context = getContext(user, emailRecord, googleCalendarLink);
+
+    return templateEngine.process("/email-template.html", context);
+  }
+
+  private void sendEmail(EmailRecord emailRecord, String htmlContent) throws MessagingException {
+    MimeMessage message = getMimeMessage(emailRecord, htmlContent);
+    mailSender.send(message);
   }
 
   protected static @NotNull Context getContext(UserResponse user, EmailRecord emailRecord,
@@ -74,17 +73,17 @@ public class EmailServiceImpl implements EmailService {
     return message;
   }
 
-  protected String generateGoogleCalendarLink(String title, LocalDateTime start, LocalDateTime end,
-                                              String details, Set<String> locations) {
+  protected String generateGoogleCalendarLink(EmailRecord emailRecord) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
-    String startTime = formatter.format(start);
-    String endTime = formatter.format(end);
+    String startTime = formatter.format(emailRecord.start());
+    String endTime = formatter.format(emailRecord.end());
 
     return "https://www.google.com/calendar/render?action=TEMPLATE" +
-        "&text=" + URLEncoder.encode(title, StandardCharsets.UTF_8) +
+        "&text=" + URLEncoder.encode(emailRecord.title(), StandardCharsets.UTF_8) +
         "&dates=" + startTime + "/" + endTime +
-        "&details=" + URLEncoder.encode(details, StandardCharsets.UTF_8) +
-        "&location=" + URLEncoder.encode(String.join(",", locations), StandardCharsets.UTF_8) +
+        "&details=" + URLEncoder.encode(emailRecord.details(), StandardCharsets.UTF_8) +
+        "&location=" +
+        URLEncoder.encode(String.join(",", emailRecord.locations()), StandardCharsets.UTF_8) +
         "&sf=true&output=xml";
   }
 
