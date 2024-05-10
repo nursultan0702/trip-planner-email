@@ -4,8 +4,8 @@ spring:
   mail:
     host: smtp.mail.ru
     port: 465
-    username: replace
-    password: replace
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
